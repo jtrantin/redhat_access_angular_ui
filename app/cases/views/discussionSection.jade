@@ -5,7 +5,7 @@ ul#tab_list.nav.nav-tabs(role="tablist")
     a(ng-click='toggleAttachments()',  data-toggle="tab", ng-hide="DiscussionService.attachments.length === 0") {{'All Attachments'|translate}}
   li(ng-class='{"active": notes}', ng-hide="securityService.loginStatus.authedUser.is_internal")
     a(ng-click='toggleNotes()', data-toggle="tab") {{'Private Notes'|translate}}
-  li(ng-class='{"active": bugzillas}', ng-show="securityService.loginStatus.authedUser.is_internal || CaseService.kase.bugzillas.bugzilla.length > 0")
+  li(ng-class='{"active": bugzillas}', ng-show="securityService.loginStatus.authedUser.is_internal && CaseService.kase.bugzillas.bugzilla.length > 0")
     a(ng-click='toggleBugzillas()', data-toggle="tab") {{'Bugzilla Tickets'|translate}}
   li(ng-class='{"active": actionPlan}')
     a(ng-click='toggleActionPlan()', data-toggle="tab") {{'Action Plan'|translate}}
