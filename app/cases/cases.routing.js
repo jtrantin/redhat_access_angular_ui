@@ -34,7 +34,7 @@ export default ($stateProvider, $provide) => {
         template: require('./views/editGroup.jade')
     });
     $stateProvider.state('advancedSearch', {
-        url: '/case/search',
+        url: '/case/search?query&sortBy',
         controller: 'AdvancedSearchController',
         template: require('./views/advancedSearch.jade')
     });
@@ -45,12 +45,12 @@ export default ($stateProvider, $provide) => {
     });
     $stateProvider.state('404', {
         url: '/404',
-        // TODO -- This was referencing cases/views/404.html which didn't exist. 
+        // TODO -- This was referencing cases/views/404.html which didn't exist.
         template: require('redhat_access_pcm_ascension_common/app/common/views/404.jade')
     });
     $stateProvider.state('403', {
         url: '/403',
-        // TODO -- This was referencing cases/views/403.html which didn't exist. 
+        // TODO -- This was referencing cases/views/403.html which didn't exist.
         template: require('redhat_access_pcm_ascension_common/app/common/views/403.jade')
     });
 
@@ -59,7 +59,7 @@ export default ($stateProvider, $provide) => {
         // be injected
         $provide.decorator("$exceptionHandler", function ($delegate) {
             'ngInject';
-            
+
             return function (exception, cause) {
                 $delegate(exception, cause);
                 if (window.errors == null) window.errors = [];

@@ -1,7 +1,7 @@
 'use strict';
 
 export default class AdvancedSearchController {
-    constructor($scope, AdvancedCaseSearchService, RHAUtils, securityService, CaseService, CASE_EVENTS) {
+    constructor($scope, AdvancedCaseSearchService, RHAUtils, securityService, CaseService, CASE_EVENTS, $state) {
         'ngInject';
 
         $scope.solrQuery = null;
@@ -24,8 +24,19 @@ export default class AdvancedSearchController {
             }
         };
 
-        $scope.$watch('CaseService.filterSelect', function () {
-            AdvancedCaseSearchService.performSearch(AdvancedCaseSearchService.query, CaseService.filterSelect);
+        $scope.$watch('CaseService.filterSelect', function (filter) {
+            if(filter) {
+                // Update filter in the URL
+                $state.go('advancedSearch', {sortBy: `${filter.sortField}_${filter.sortOrder}`}, {
+                    location: 'replace',
+                    notify: false,
+                    reload: false
+                });
+                if (AdvancedCaseSearchService.resolveOrder(filter) !== AdvancedCaseSearchService.order) {
+                    // not to fire the search on controller init, only fire when filter has actually changed
+                    AdvancedCaseSearchService.performSearch(AdvancedCaseSearchService.query, filter);
+                }
+            }
         });
     }
 }

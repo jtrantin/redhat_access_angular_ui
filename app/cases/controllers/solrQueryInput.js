@@ -1,11 +1,12 @@
 'use strict';
 
 export default class SolrQueryInputController {
-    constructor($scope, SOLRGrammarService, RHAUtils, CASE_EVENTS, strataService, CaseService, ProductsService, securityService, AccountBookmarkService, AccountService) {
+    constructor($scope, SOLRGrammarService, RHAUtils, CASE_EVENTS, strataService, CaseService, ProductsService, securityService,
+                AccountBookmarkService, AccountService, $stateParams, $state) {
         'ngInject';
 
         $scope.parseSuccessful = false;
-        $scope.inputQuery = "";
+        $scope.inputQuery = $stateParams.query || "";
         $scope.showingCompletionList = true;
         $scope.CASE_EVENTS = CASE_EVENTS;
         $scope.RHAUtils = RHAUtils;
@@ -15,6 +16,7 @@ export default class SolrQueryInputController {
         $scope.productsLoading = true;
         $scope.accountsLoading = true;
         $scope.ABS = AccountBookmarkService;
+        $scope.autocompleteSegments = {};
 
         var init = function () {
             var promises = [];
@@ -97,12 +99,38 @@ export default class SolrQueryInputController {
             }
 
             Promise.all(promises).then(function () {
+                $scope.setupAutocompletion();
                 $scope.$broadcast(CASE_EVENTS.focusSearchInput);
+
+                // Check whether there is some query from state, if it's valid submit it
+                if(RHAUtils.isNotEmpty($scope.inputQuery)) {
+                    if($scope.verifyQuery($scope.inputQuery)) { // re-verify, since all the objects ^ are now loaded and grammar is updated
+                        $scope.submit();
+                    }
+                }
             });
+        };
+
+        $scope.setupAutocompletion = () => {
+            if(RHAUtils.isNotEmpty(SOLRGrammarService.accounts)) {
+                SOLRGrammarService.accounts.forEach(account => {
+                    // Autocompletion which is not directly in the grammar, to make it non-user-specific
+                   $scope.autocompleteSegments[account.number] = `${account.number} (${account.name})`;
+                });
+            }
         };
 
         $scope.changeSolrQuery = function (query) {
             $scope.solrQuery = query;
+        };
+
+        $scope.verifyQuery = (query) => {
+            try {
+                SOLRGrammarService.parse(query);
+                return true;
+            } catch (e) {
+                return false;
+            }
         };
 
         $scope.$watch("inputQuery", function (query) {
@@ -110,6 +138,7 @@ export default class SolrQueryInputController {
                 var solrquery = SOLRGrammarService.parse(query);
                 $scope.changeSolrQuery(solrquery);
                 $scope.parseSuccessful = true;
+                $state.go('advancedSearch', {query: query}, {location: 'replace', notify: false, reload: false});
 
                 // trigger further autocompletion by adding a whitespace
                 try {
@@ -141,10 +170,10 @@ export default class SolrQueryInputController {
                         if (contentMatch != null && contentMatch.length >= 2) {
                             content = contentMatch[1];
                         }
-                        autocomplete.push({display: content, value: expected.value});
+                        autocomplete.push({display: $scope.autocompleteSegments[content] || content, value: expected.value});
                         info = "Choose one of the displayed options.";
                     } else if (expected.value === '"') {
-                        info = "Values containing whitespaces have to be wraped in double quotes.";
+                        info = "Values containing whitespaces have to be wrapped in double quotes.";
                     }
 
                     if (expected.value === " and ") {
@@ -168,6 +197,7 @@ export default class SolrQueryInputController {
                 if (a.display > b.display) return 1;
                 return 0;
             });
+
             if (phrase !== undefined && RHAUtils.isNotEmpty(phrase.trim())) {
                 $scope.autocompleteList = $scope.autocompleteList.filter(function (item) {
                     return item.display.toLowerCase().indexOf(phrase.trim().toLowerCase()) >= 0;

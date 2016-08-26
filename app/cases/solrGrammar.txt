@@ -17,6 +17,7 @@ basicCriteria = field:basicFieldName ":"" "* value:value { return field + ":" + 
 / field:productFieldName ":"" "* value:productValue { return field + ":" + value; }
 / field:ftsFieldName ":"" "* value:booleanValue { return field + ":" + value; }
 / field:accountNumberFieldName ":"" "* value:accountNumberValue { return field + ":" + value; }
+/ field:accountNameFieldName ":"" "* value:accountNameValue { return field + ":" + value; }
 
 value = range / string
 range = "[" from:([^" "]+) " TO " to:([^\]]+) "]" {return "[" + from.join("") + " TO " + to.join("") + "]"; }
@@ -24,8 +25,7 @@ string = value:([^" ")]+) { return value.join(""); } / "\""value:([^\"]+)"\"" { 
 booleanValue = "true" / "false"
 number = digits:[0-9]+ { return digits.join(''); }
 
-basicFieldName = "accountName" {return "case_account_name";}
-/ "contactName" {return "case_contactName";}
+basicFieldName = "contactName" {return "case_contactName";}
 / "createdByName" {return "case_createdByName";}
 / "createdDate" {return "case_createdDate";}
 / "description" {return "case_description";}
@@ -51,6 +51,9 @@ productValue = string
 
 accountNumberFieldName = "accountNumber" {return "case_accountNumber";}
 accountNumberValue = number
+
+accountNameFieldName = "accountName" { return "case_account_name";}
+accountNameValue = string
 
 
 //EOF

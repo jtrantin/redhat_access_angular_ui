@@ -16,7 +16,7 @@ div(ng-if='securityService.loginStatus.isLoggedIn')
         div(ng-show="AdvancedCaseSearchService.query != null && AdvancedCaseSearchService.cases.length > 0 && AdvancedCaseSearchService.allRecordsCount != null")
             span(translate) Showing {{AdvancedCaseSearchService.cases.length}} out of {{AdvancedCaseSearchService.allRecordsCount}} search results
 
-    #case-list.table-list.case-list(ng-hide="RHAUtils.isEmpty(AdvancedCaseSearchService.cases)", infinite-scroll="bottomScrolled()")
+    #case-list.table-list.case-list(ng-hide="RHAUtils.isEmpty(AdvancedCaseSearchService.cases)", infinite-scroll="bottomScrolled()", infinite-scroll-immediate-check="false")
         .list-item(ng-repeat='case in AdvancedCaseSearchService.cases')
             a(href='#/case/{{case.case_number}}')
                 .row.case()

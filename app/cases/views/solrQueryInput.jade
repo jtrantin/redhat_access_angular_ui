@@ -1,7 +1,7 @@
 .alert.alert-info(ng-hide='RHAUtils.isEmpty(info) || severitiesLoading || statusLoading || groupsLoading || productsLoading || accountsLoading')
   div(ng-bind-html="info")
 div.spinner(ng-show="severitiesLoading || statusLoading || groupsLoading || productsLoading || accountsLoading")
-div(ng-hide="severitiesLoading || statusLoading || groupsLoading || productsLoading || accountsLoading", ng-class="{'has-error': !parseSuccessful && RHAUtils.isNotEmpty($scope.inputQuery), 'has-success': parseSuccessful}")
+div(ng-hide="severitiesLoading || statusLoading || groupsLoading || productsLoading || accountsLoading", ng-class="{'has-error': !parseSuccessful && RHAUtils.isNotEmpty(inputQuery), 'has-success': parseSuccessful}")
   input#solrqueryinput.form-control(type="text", ng-model="inputQuery", ng-trim="false", ng-keydown="keyPress($event)", ng-focus="showCompletionList()",
   rha-focus-on='{{CASE_EVENTS.focusSearchInput}}', placeholder='Enter SOLR query, for example:  severity:\"1 (Urgent)\" and lastModifiedDate:[NOW-7DAYS TO *] and -status:\"Waiting on Customer\"')
 .list-group.autocomplete-list(ng-hide="!showingCompletionList || severitiesLoading || statusLoading || groupsLoading || productsLoading || accountsLoading")
